@@ -1,0 +1,47 @@
+#+TITLE: docker-sbuildenv
+
+* Usage
+** get image
+
+(TBD) fetch from dockerhub:
+
+#+BEGIN_SRC shell
+docker pull lurdan/sbuildenv
+#+END_SRC
+
+or build:
+
+#+BEGIN_SRC shell
+docker build --build-arg http_proxy=http://[your-apt-cacher]:3142 -t lurdan/sbuildenv .
+#+END_SRC
+
+** packaging
+*** run workbench
+#+BEGIN_SRC shell
+docker run -it --rm --cap-add SYS_ADMIN -v $PWD:/work \
+        -v [~/path/to/pkgs]:/output \
+        -v [~/.sbuildrc]:/home/builder/.sbuildrc \
+        lurdan/sbuildenv /bin/bash
+#+END_SRC
+
+*** try to build
+
+#+BEGIN_SRC shell
+apt-get source XXXXX
+apt-get build-dep XXXXX
+cd XXXXX-*
+util.sh buildpackage
+#+END_SRC
+
+*** update workbench
+
+#+BEGIN_SRC shell
+util.sh updatechroot
+#+END_SRC
+
+** run sbuild as daemon
+TBD
+
+* Roadmap
+- [ ] rename script
+- [ ] tweak ccache / mount / queueing / etc.
