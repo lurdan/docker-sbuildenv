@@ -21,7 +21,14 @@ docker build --build-arg http_proxy=http://[your-apt-cacher]:3142 -t lurdan/sbui
 docker run -it --rm --cap-add SYS_ADMIN -v $PWD:/work \
         -v [~/path/to/pkgs]:/output \
         -v [~/.sbuildrc]:/home/builder/.sbuildrc \
+        -e http_proxy=http://[your-apt-cacher]:3142 \
         lurdan/sbuildenv /bin/bash
+#+END_SRC
+
+*** run sbuild
+#+BEGIN_SRC emacs-lisp
+./util.sh sbuild XXXX
+
 #+END_SRC
 
 *** try to build

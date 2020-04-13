@@ -1,6 +1,10 @@
 #!/bin/sh
 set -x
 
+_logfilter() {
+  egrep -v '^(Get:|Preparing|Unpacking|Setting up|Processing triggers|Removing)'
+}
+
 _createchroot() {
   for ARCH in amd64; do \
     for DIST in stable testing unstable; do \
@@ -11,10 +15,13 @@ _createchroot() {
 }
 
 _updatechroot() {
+  {
+  sudo apt update && sudo apt -y full-upgrade && sudo apt -y autoremove --purge && sudo apt clean
   schroot -l | awk -F : '/sbuild/{print $2}' | while read CHROOT
   do
     sudo sbuild-update -udcar $CHROOT
   done
+  } | _logfilter
 }
 
 _fixchroot() {
@@ -31,7 +38,36 @@ _cleanchroot() {
 }
 
 _buildpackage() {
-  sbuild --build-dir=/output -d unstable
+  sbuild -j $(nproc) --build-dir=/output -d unstable #| _logfilter
 }
 
-_$1
+_sbuild() {
+  local TARGET=$2
+
+  case "$TARGET" in
+    "*.dsc")
+      WORK=$PWD
+    ;;
+    "")
+      WORK=$PWD
+    ;;
+    *)
+    ;;
+  esac
+
+  docker run -it --rm --cap-add SYS_ADMIN -v $WORK:/work \
+         -v [~/path/to/pkgs]:/output \
+         -v [~/.sbuildrc]:/home/builder/.sbuildrc \
+         -e http_proxy=http://[your-apt-cacher]:3142 \
+         lurdan/sbuildenv /usr/local/bin/util.sh buildpackage
+}
+
+_try() {
+  docker run -it --rm --cap-add SYS_ADMIN -v $PWD:/work \
+         -v [~/deb/output]:/output \
+         -v [~/.sbuildrc]:/home/builder/.sbuildrc \
+         -e http_proxy=http://192.168.200.240:3142 \
+         lurdan/sbuildenv /bin/bash
+}
+
+_$*
