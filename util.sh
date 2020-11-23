@@ -38,7 +38,7 @@ _cleanchroot() {
 }
 
 _buildpackage() {
-  sbuild -j $(nproc) --build-dir=/output -d unstable #| _logfilter
+  sbuild -j $(nproc) --build-dir=/output -d unstable --source-only-changes #| _logfilter
 }
 
 _sbuild() {
