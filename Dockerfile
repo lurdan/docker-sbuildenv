@@ -14,7 +14,9 @@ WORKDIR /work
 
 FROM base AS sbuild
 
-RUN DEBIAN_FRONTEND=noninteractive apt -y install --no-install-recommends sbuild schroot lintian-brush piuparts git-buildpackage pristine-tar quilt vim && \
+RUN DEBIAN_FRONTEND=noninteractive apt -y install --no-install-recommends \
+      sbuild schroot lintian-brush lintian piuparts git-buildpackage pristine-tar \
+      dput quilt vim && \
   apt -y autoremove && apt clean && sbuild-adduser builder && newgrp sbuild
 COPY util.sh /usr/local/bin
 RUN mkdir /output && chown builder /output && util.sh createchroot

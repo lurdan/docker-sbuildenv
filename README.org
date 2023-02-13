@@ -38,6 +38,8 @@ apt-get source XXXXX
 apt-get build-dep XXXXX
 cd XXXXX-*
 util.sh buildpackage
+debsign -k XXXX XXXXX_source.changes
+dput .... XXXX_source.changes
 #+END_SRC
 
 *** update workbench
