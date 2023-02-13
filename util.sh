@@ -2,7 +2,7 @@
 set -x
 
 _logfilter() {
-  egrep -v '^(Get:|Preparing|Unpacking|Setting up|Processing triggers|Removing)'
+  grep -E -v '^(Get:|Preparing|Unpacking|Setting up|Processing triggers|Removing)'
 }
 
 _createchroot() {
@@ -38,7 +38,7 @@ _cleanchroot() {
 }
 
 _buildpackage() {
-  sbuild -j $(nproc) --build-dir=/output -d unstable --source-only-changes #| _logfilter
+  sbuild -j $(nproc) --build-dir=/output -A -s -d unstable --source-only-changes #| _logfilter
 }
 
 _sbuild() {
